@@ -18,6 +18,7 @@ Cubby is a game made by Unity 2020.3. Project created at 6 August 2021 14:00.
 - S-Ball: makes you small and your mass decreases
 - N-Ball: makes you normal and your mass gets normal
 - B-Ball: makes you big and your mass increases a lot
+- Gravit Objects: adjusts gravity
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
