@@ -252,7 +252,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 4
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.7607843, g: 0.8901961, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -332,10 +332,16 @@ MonoBehaviour:
   whatIsWall:
     serializedVersion: 2
     m_Bits: 512
-  extraJumpNum: 1
-  pickupCoinSound: {fileID: 0}
-  onDeathSound: {fileID: 0}
-  finishText: {fileID: 0}
+  extraJumpNum: 0
+  jumpSound: {fileID: 1232418976057994146, guid: 0a8bc3a13c8a88440ac7a75d9473062c, type: 3}
+  pickupCoinSound: {fileID: 7819872414631944575, guid: 2ed5211c42176204185639f432e8043d, type: 3}
+  onDeathSound: {fileID: 3554856616395774772, guid: ae41f5d2818b54242b3411781b4dce6e, type: 3}
+  smallSizeSound: {fileID: 1993222646224909403, guid: 37980b36b71163242b0642333c3efb28, type: 3}
+  normalSizeSound: {fileID: 4204563052912437542, guid: 3e28dddc6b0f9eb4db7f7b565d48e9b4, type: 3}
+  bigSizeSound: {fileID: 290646300900998929, guid: 06f7e93009dd60e469f9085f375b062c, type: 3}
+  noGravitySound: {fileID: 1644587875980260455, guid: a5d904b95a755cc489ccaaa0051cdff8, type: 3}
+  GravitySound: {fileID: 2990899469061857429, guid: bfca12efbedde6c41a2e860405600f7e, type: 3}
+  finishText: {fileID: 3643154940474543480, guid: 233ef5181cf2940409aa4a8a3c1011eb, type: 3}
 --- !u!1 &1941941790838335369
 GameObject:
   m_ObjectHideFlags: 0
