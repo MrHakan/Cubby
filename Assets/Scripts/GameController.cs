@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Rendering.PostProcessing;
 
 public class GameController : MonoBehaviour
 {
@@ -33,12 +32,14 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioSource bigSizeSound;
     [SerializeField] private AudioSource noGravitySound;
     [SerializeField] private AudioSource GravitySound;
-
-    static private bool gameFinished = false;
+ 
+    private static bool gameFinished = false;
+    private static bool inspeedboost = false;
     [SerializeField] private GameObject finishText;
 
     private void Start()
     {
+        inspeedboost = false;
         rb = GetComponent<Rigidbody2D>();
         if (SceneManager.GetActiveScene().name == "testing") { GameObject.Find("LevelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Test Level"; }
         else { GameObject.Find("LevelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Level: " + SceneManager.GetActiveScene().buildIndex; }
@@ -65,6 +66,8 @@ public class GameController : MonoBehaviour
             SceneManager.LoadScene("MainMenu");
         }
         if (Input.GetKey(KeyCode.R)) { SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
+        if (inspeedboost == true) {speed = 12;}
+        else {speed = 7;}
     }
 
     private void FixedUpdate()
@@ -89,6 +92,7 @@ public class GameController : MonoBehaviour
         {
             Time.timeScale = 1.0f;
         }
+        //GameObject.Find("Timer").GetComponent<TMPro.TextMeshProUGUI>().text = "Time elapsed: " + Time;
     }
 
     private void Flip()
@@ -132,6 +136,10 @@ public class GameController : MonoBehaviour
             }
 
         }
+        if (collision.name.Equals("easteregg?"))
+        {
+            
+        }
         if (collision.tag.Equals("PowerUp"))
         {
             if (collision.name.Equals("smallSize"))
@@ -166,6 +174,13 @@ public class GameController : MonoBehaviour
                 rb.gravityScale = 1.4f;
                 GravitySound.Play();
                 Destroy(collision.gameObject);
+            }
+        }
+        if (collision.tag.Equals("Extras"))
+        {
+            if (collision.name.Contains("SpeedBoost"))
+            {
+                inspeedboost = true;
             }
         }
     }

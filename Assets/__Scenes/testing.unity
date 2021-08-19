@@ -480,6 +480,30 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5689290820608464357, guid: 330a5dc85ac71c647b8e03cda0a9b812, type: 3}
   m_PrefabInstance: {fileID: 443108345}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &457470498 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919212186337335641, guid: d854ce207215dc442859857189bc201d, type: 3}
+  m_PrefabInstance: {fileID: 716868111}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &457470499
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 457470498}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 111e9cfb1afe6514b8696fe829105bf4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &491782630
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -682,6 +706,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1065936383553631296, guid: 2400e3ef0af33fa4d8f8c8f2a2fd1aa0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1065936383553631297, guid: 2400e3ef0af33fa4d8f8c8f2a2fd1aa0, type: 3}
+      propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1065936383553631299, guid: 2400e3ef0af33fa4d8f8c8f2a2fd1aa0, type: 3}
@@ -981,6 +1009,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9173034947682087417, guid: 050906dfb87dae447944330f2e9d20d8, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 111e9cfb1afe6514b8696fe829105bf4, type: 2}
     - target: {fileID: 9173034947682087419, guid: 050906dfb87dae447944330f2e9d20d8, type: 3}
       propertyPath: m_Name
       value: normalSize

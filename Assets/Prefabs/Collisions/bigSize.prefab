@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 919212186337335646}
   - component: {fileID: 919212186337335645}
   - component: {fileID: 919212186337335644}
+  - component: {fileID: 5386925021031381818}
   m_Layer: 0
   m_Name: bigSize
   m_TagString: PowerUp
@@ -113,3 +114,22 @@ CircleCollider2D:
   m_Offset: {x: -0.010168254, y: 0.010167509}
   serializedVersion: 2
   m_Radius: 1.3540746
+--- !u!95 &5386925021031381818
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919212186337335641}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 111e9cfb1afe6514b8696fe829105bf4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
