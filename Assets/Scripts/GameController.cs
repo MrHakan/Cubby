@@ -23,6 +23,13 @@ public class GameController : MonoBehaviour
 
     //collision stuff
     private int points = 0;
+
+    private static bool gameFinished = false;
+    private static bool inspeedboost = false;
+    [SerializeField] private GameObject finishText;
+    [SerializeField] private TMPro.TextMeshProUGUI timerText;
+    private float startTime;
+
     //audio
     [SerializeField] private AudioSource jumpSound;
     [SerializeField] private AudioSource pickupCoinSound;
@@ -32,21 +39,28 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioSource bigSizeSound;
     [SerializeField] private AudioSource noGravitySound;
     [SerializeField] private AudioSource GravitySound;
- 
-    private static bool gameFinished = false;
-    private static bool inspeedboost = false;
-    [SerializeField] private GameObject finishText;
+
+    private void Awake()
+    {
+        startTime = Mathf.Round(Time.time);
+        DontDestroyOnLoad(timerText);
+    }
 
     private void Start()
     {
         inspeedboost = false;
         rb = GetComponent<Rigidbody2D>();
         if (SceneManager.GetActiveScene().name == "testing") { GameObject.Find("LevelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Test Level"; }
-        else { GameObject.Find("LevelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Level: " + SceneManager.GetActiveScene().buildIndex; }
+        else if (SceneManager.GetActiveScene().name == "EasterEgg") { GameObject.Find("LevelText").GetComponent<TMPro.TextMeshProUGUI>().text = "easter egg??"; }
+        else { GameObject.Find("LevelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Level: " + (SceneManager.GetActiveScene().buildIndex - 1); }
     }
 
     private void Update()
     {
+        float t = Mathf.Round(Time.time - startTime);
+        string min = ((int)t / 60).ToString();
+        string sec = (t % 60).ToString();
+        timerText.text = min + ':' +sec;
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && extraJump > 0)
         {
             rb.velocity = Vector2.up * jumpForce;
@@ -136,9 +150,13 @@ public class GameController : MonoBehaviour
             }
 
         }
-        if (collision.name.Equals("easteregg?"))
+        if (collision.name.Equals("easteregg"))
         {
-            
+            SceneManager.LoadScene("EasterEgg");
+        }
+        else if (collision.name.Equals("easter_exit"))
+        {
+            SceneManager.LoadScene("Level7");
         }
         if (collision.tag.Equals("PowerUp"))
         {

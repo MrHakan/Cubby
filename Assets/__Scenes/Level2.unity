@@ -2009,6 +2009,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 500967777}
     - target: {fileID: 1941941790780090047, guid: a32394fd8c2880745b3afd67604e2f9d, type: 3}
+      propertyPath: timerText
+      value: 
+      objectReference: {fileID: 2117335553720834919}
+    - target: {fileID: 1941941790780090047, guid: a32394fd8c2880745b3afd67604e2f9d, type: 3}
       propertyPath: bigSizeSound
       value: 
       objectReference: {fileID: 500967774}
@@ -2131,6 +2135,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d29197a5cb7fd0542a5f4d0806ec3f67, type: 3}
+--- !u!114 &2117335553720834919 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3595553862147886990, guid: d29197a5cb7fd0542a5f4d0806ec3f67, type: 3}
+  m_PrefabInstance: {fileID: 2117335553720834918}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4222195474554707345
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -333,6 +333,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   extraJumpNum: 0
+  finishText: {fileID: 3643154940474543480, guid: 233ef5181cf2940409aa4a8a3c1011eb, type: 3}
+  timerText: {fileID: 7053053102078306968, guid: 0f576040e88ceb14198e51787b965289, type: 3}
   jumpSound: {fileID: 1232418976057994146, guid: 0a8bc3a13c8a88440ac7a75d9473062c, type: 3}
   pickupCoinSound: {fileID: 7819872414631944575, guid: 2ed5211c42176204185639f432e8043d, type: 3}
   onDeathSound: {fileID: 3554856616395774772, guid: ae41f5d2818b54242b3411781b4dce6e, type: 3}
@@ -341,7 +343,6 @@ MonoBehaviour:
   bigSizeSound: {fileID: 290646300900998929, guid: 06f7e93009dd60e469f9085f375b062c, type: 3}
   noGravitySound: {fileID: 1644587875980260455, guid: a5d904b95a755cc489ccaaa0051cdff8, type: 3}
   GravitySound: {fileID: 2990899469061857429, guid: bfca12efbedde6c41a2e860405600f7e, type: 3}
-  finishText: {fileID: 3643154940474543480, guid: 233ef5181cf2940409aa4a8a3c1011eb, type: 3}
 --- !u!1 &1941941790838335369
 GameObject:
   m_ObjectHideFlags: 0
