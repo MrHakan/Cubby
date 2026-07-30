@@ -221,12 +221,12 @@ export const LEVELS = [
   },
   "solids": [
    {
-    "x": -13.471,
-    "y": 5.399,
-    "w": 7.441,
-    "h": 1.0,
-    "kind": "ground",
-    "angle": 30.0
+    "x": -12.27,
+    "y": 5.65,
+    "w": 5.32,
+    "h": 0.9,
+    "angle": 39.6,
+    "kind": "ground"
    },
    {
     "x": -16.444,
@@ -294,6 +294,20 @@ export const LEVELS = [
     "h": 1.0,
     "kind": "wall",
     "angle": 90.0
+   },
+   {
+    "x": 2.35,
+    "y": -1.6,
+    "w": 2.4,
+    "h": 0.5,
+    "kind": "ground"
+   },
+   {
+    "x": 5.1,
+    "y": -5.85,
+    "w": 4.0,
+    "h": 0.5,
+    "kind": "ground"
    }
   ],
   "coins": [

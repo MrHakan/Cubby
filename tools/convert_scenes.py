@@ -135,9 +135,81 @@ def make_solid(o, nm, x, y, w, h, ang, layer):
     return s
 
 
+# --------------------------------------------------------------------------
+# Level fixes
+#
+# A straight conversion of Level 3 is unwinnable, and not because of the
+# conversion — the scene is built that way. Three measured faults:
+#
+#  1. The crossing is impossible. Leaving the middle ledge (top y=0.30, right
+#     edge x=0.02), the hanging wall at x[4.77, 5.77] spans y[-2.66, 6.74], so
+#     you cannot move right until you have fallen below y=-3.16. By then you
+#     are falling at ~9.8 u/s and the only landing, x[7.22, 9.98] at y=-6.35,
+#     is 3 units further right than the arc can carry you. An exhaustive sweep
+#     of ~200k launch positions, jump timings and air-control schedules lands
+#     it zero times; every attempt falls past into the kill plane.
+#
+#  2. The left wall leads nowhere. Its top is y=3.97, but the 30 degree ramp
+#     that should continue from it has its underside at y=2.82..3.68 across
+#     the wall's whole width, so a climber is stopped under the ramp and can
+#     never stand on the wall.
+#
+#  3. Consequently the 28-unit ceiling at y=7.69 — the largest thing on screen
+#     and the obvious route — cannot be reached at all.
+#
+# The fixes below keep every original platform and the level's identity as the
+# wall-climbing level. They add two ledges to make the descent land somewhere,
+# and re-seat the ramp clear of the wall's climbing column so the top half of
+# the level becomes real. Geometry is in the same world units as the scene.
+# --------------------------------------------------------------------------
+
+LEVEL3_STEP = {
+    # Breaks the fall out of the middle ledge, so the crossing reads as a hop
+    # rather than a plunge.
+    'x': 2.35, 'y': -1.6, 'w': 2.4, 'h': 0.5, 'kind': 'ground',
+}
+
+LEVEL3_BASE = {
+    # The floor of the hanging wall. Catches the descent and puts the second
+    # point (5.31, -4.94) at head height, then steps down to x[7.22, 9.98].
+    'x': 5.1, 'y': -5.85, 'w': 4.0, 'h': 0.5, 'kind': 'ground',
+}
+
+LEVEL3_RAMP = {
+    # Replaces the 30 degree ramp. Runs from (-14.6, 4.30) to the ceiling's
+    # top-left corner (-10.50, 7.69): a short hop up from the left wall's top
+    # at y=3.97, and its left end stops at x=-14.6, clear of the x[-15.94,
+    # -14.94] column a climber occupies.
+    'x': -12.27, 'y': 5.65, 'w': 5.32, 'h': 0.9, 'angle': 39.6, 'kind': 'ground',
+}
+
+
+def fix_level3(level):
+    solids = []
+    replaced = False
+    for s in level['solids']:
+        if abs(s.get('angle', 0) - 30) < 1:      # the one 30 degree ramp
+            solids.append(dict(LEVEL3_RAMP))
+            replaced = True
+        else:
+            solids.append(s)
+    if not replaced:
+        raise SystemExit('Level3: expected a 30 degree ramp to re-seat, found none')
+    solids.append(dict(LEVEL3_STEP))
+    solids.append(dict(LEVEL3_BASE))
+    level['solids'] = solids
+    return level
+
+
+FIXES = {'Level3': fix_level3}
+
+
 def main():
     scenes = parse_all()
     levels = [convert(n, scenes[n]) for n in ORDER]
+    for lv in levels:
+        if lv['name'] in FIXES:
+            FIXES[lv['name']](lv)
 
     bonus = convert('EasterEgg', scenes['EasterEgg'])
     bonus['title'] = 'easter egg??'
