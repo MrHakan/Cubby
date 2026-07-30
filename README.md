@@ -69,6 +69,12 @@ is climbable. The animated platforms follow the original AnimationClips: the
 Level 7 shuttle is `xmove.anim`'s two-second cosine sweep, and the Level 4
 platforms pulse on `MovingRectangle.anim`'s 2.58-second scale loop.
 
+Level 6's plank is the game's only `Rigidbody2D` platform, and the reason the
+level is called Heavy and hands you a B orb. It is rigid under a small or
+normal cube — it does not shift at all — and gives way only under a big one
+(mass 4), creaking for a moment before dropping out of the level and taking
+you down to the floor below.
+
 Coyote time and a jump buffer are the one deliberate feel change. They only make
 inputs land that were already going to work, so nothing the original refused
 becomes possible.

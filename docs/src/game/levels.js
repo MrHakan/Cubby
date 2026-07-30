@@ -712,8 +712,9 @@ export const LEVELS = [
     "w": 8.0,
     "h": 0.25,
     "kind": "ground",
-    "dynamic": {
-     "mass": 5
+    "brittle": {
+     "holds": 1,
+     "creak": 0.45
     }
    },
    {

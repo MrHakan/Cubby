@@ -129,8 +129,11 @@ def make_solid(o, nm, x, y, w, h, ang, layer):
         # MovingRectangle.anim eases scale.x 4 -> 0.746 -> 4 on a 2.583 s loop.
         s['pulse'] = {'from': 4.0, 'to': 0.7461195, 'period': 2.5833333}
     elif nm.startswith('Rectangle RB'):
-        # A Rigidbody2D plank balanced on a pillar: a see-saw.
-        s['dynamic'] = {'mass': 5}
+        # The Level 6 plank — the only Rigidbody2D platform in the game, and
+        # the reason the level is called Heavy and hands you a B orb.
+        # It is rigid under a small or normal cube (mass 0.5 / 1) and gives way
+        # under a big one (mass 4), dropping you to the floor below.
+        s['brittle'] = {'holds': 1, 'creak': 0.45}
 
     return s
 

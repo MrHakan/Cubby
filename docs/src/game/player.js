@@ -168,6 +168,7 @@ export class Player {
     for (let pass = 0; pass < 2; pass++) {
       let touched = false;
       for (const solid of this.world.solids) {
+        if (solid.gone) continue;
         const hit = resolveAabbObb(this.x, this.y, hw, hh, solid.box);
         if (!hit) continue;
         touched = true;
@@ -200,6 +201,7 @@ export class Player {
     this.onWall = 0;
 
     for (const solid of this.world.solids) {
+      if (solid.gone) continue;
       if (solid.kind === 'ground' || solid.kind === 'plain') {
         const hit = resolveAabbObb(this.x, this.y - skin, hw * 0.92, hh, solid.box);
         if (hit && hit.ny > 0.55) {

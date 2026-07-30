@@ -245,6 +245,17 @@ export class Game {
         'rgba(255,150,110,0.7)');
     }
 
+    // A plank giving way under a heavy cube is the big beat of Level 6.
+    for (const s of world.solids) {
+      if (s.brittle && s.gone && !s.announced) {
+        s.announced = true;
+        this.audio.play('death', { rate: 0.55, gain: 0.5 });
+        this.camera.kick(0.55);
+        this.particles.burst(s.box.x, s.box.y, '#eef8ff', 20, 6);
+        this.particles.burst(s.box.x, s.box.y, '#ff9a7a', 10, 4);
+      }
+    }
+
     if (player.dead) {
       this._die();
       return;

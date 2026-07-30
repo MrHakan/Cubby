@@ -6,7 +6,7 @@
  *
  *   - `move`   → xmove.anim, a 2 s cosine sweep along x (Level 7's shuttle)
  *   - `pulse`  → MovingRectangle.anim, a scale.x pulse (Level 4's platforms)
- *   - `seesaw` → the Rigidbody2D plank balanced on a pillar in Level 6
+ *   - `brittle` → the Rigidbody2D plank in Level 6, which only a heavy cube breaks
  */
 
 import { makeBox, setBoxAngle, boxExtents, aabbOverlap } from './physics.js';
@@ -36,11 +36,19 @@ export class World {
         vy: 0,
         move: s.move || null,
         pulse: s.pulse || null,
-        seesaw: null,
+        brittle: null,
+        gone: false,
       };
-      if (s.dynamic) {
-        // The plank rests on a short pillar; standing off-centre tips it.
-        solid.seesaw = { angle: 0, vel: 0, limit: 0.36, inertia: 26 };
+      if (s.brittle) {
+        // Holds a normal cube indefinitely; a heavy one breaks through.
+        solid.brittle = {
+          holds: s.brittle.holds,
+          creak: s.brittle.creak,
+          load: 0,
+          sag: 0,
+          fallTime: 0,
+          spin: 0,
+        };
         solid.kind = 'ground';
       }
       return solid;
@@ -92,7 +100,7 @@ export class World {
 
   /**
    * @param {number} dt   seconds since the previous step
-   * @param {?object} rider  the player, used to load the see-saw
+   * @param {?object} rider  the player, whose weight loads the brittle plank
    */
   update(dt, rider) {
     this.time += dt;
@@ -113,8 +121,8 @@ export class World {
         s.box.hw = (from + (to - from) * k) / 2;
       }
 
-      if (s.seesaw) {
-        this._stepSeesaw(s, dt, rider);
+      if (s.brittle) {
+        this._stepBrittle(s, dt, rider);
       }
 
       if (dt > 0) {
@@ -126,29 +134,42 @@ export class World {
     for (const c of this.coins) c.phase += dt;
   }
 
-  _stepSeesaw(s, dt, rider) {
+  /**
+   * The Level 6 plank.
+   *
+   * It is a plain, rigid platform for a small or normal cube — it does not
+   * shift at all. Only a cube heavier than `holds` (the B orb takes you to
+   * mass 4) loads it: it sags and creaks for `creak` seconds, then gives way
+   * and drops out of the level, which is the level's whole point.
+   */
+  _stepBrittle(s, dt, rider) {
     if (dt <= 0) return;
-    const see = s.seesaw;
-    let torque = 0;
+    const b = s.brittle;
 
-    if (rider && rider.groundSolid === s) {
-      // Lever arm measured along the plank, so the load stays sensible as it tips.
-      const dx = rider.x - s.box.x;
-      const dy = rider.y - s.box.y;
-      const along = dx * s.box.cos + dy * s.box.sin;
-      torque -= along * rider.mass * 9.81;
+    if (s.gone) {
+      // Already broken: tumble away. It stopped colliding the moment it went.
+      b.fallTime += dt;
+      b.spin += 60 * dt;
+      s.box.y = s.base.y - 0.5 * 13.734 * b.fallTime * b.fallTime;
+      setBoxAngle(s.box, (s.base.angle || 0) + b.spin * b.fallTime);
+      return;
     }
 
-    // A spring back to level, so an unloaded plank settles instead of drifting.
-    torque -= see.angle * 34;
-    see.vel += (torque / see.inertia) * dt;
-    see.vel *= Math.exp(-2.6 * dt);
-    see.angle += see.vel * dt;
+    const loaded = rider && rider.groundSolid === s && rider.mass > b.holds;
+    if (loaded) {
+      b.load += dt;
+      if (b.load >= b.creak) {
+        s.gone = true;
+        b.load = b.creak;
+        return;
+      }
+    } else {
+      b.load = Math.max(0, b.load - dt * 2);
+    }
 
-    if (see.angle > see.limit) { see.angle = see.limit; see.vel = Math.min(see.vel, 0); }
-    if (see.angle < -see.limit) { see.angle = -see.limit; see.vel = Math.max(see.vel, 0); }
-
-    setBoxAngle(s.box, ((s.base.angle || 0) + (see.angle * 180) / Math.PI));
+    // Barely visible give — enough to telegraph, far too little to wedge on.
+    b.sag = 0.12 * (b.load / b.creak);
+    s.box.y = s.base.y - b.sag;
   }
 
   /** Coins overlapping the player's box; the caller decides what to do with them. */

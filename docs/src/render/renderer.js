@@ -52,6 +52,18 @@ function makeStars(seed, count = 130) {
   }));
 }
 
+/** Blend two #rrggbb colours, t in 0..1. */
+function mix(a, b, t) {
+  const pa = parseInt(a.slice(1), 16);
+  const pb = parseInt(b.slice(1), 16);
+  const ch = (shift) => {
+    const va = (pa >> shift) & 255;
+    const vb = (pb >> shift) & 255;
+    return Math.round(va + (vb - va) * t);
+  };
+  return `rgb(${ch(16)}, ${ch(8)}, ${ch(0)})`;
+}
+
 function roundRect(ctx, x, y, w, h, r) {
   const rad = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
   ctx.beginPath();
@@ -120,7 +132,7 @@ export class Renderer {
     ctx.lineJoin = 'round';
 
     this._zones(ctx, world, time);
-    this._solids(ctx, world);
+    this._solids(ctx, world, time);
     this._decor(ctx, world, time);
     this._goal(ctx, world, time);
     this._coins(ctx, world, time);
@@ -206,7 +218,7 @@ export class Renderer {
     }
   }
 
-  _solids(ctx, world) {
+  _solids(ctx, world, time) {
     for (const s of world.solids) {
       if (s.kind === 'invisible') continue;
       const b = s.box;
@@ -214,15 +226,25 @@ export class Renderer {
       const h = b.hh * 2;
       const isWall = s.kind === 'wall';
 
+      // A plank under too much weight shudders before it lets go, then falls.
+      const strain = s.brittle && !s.gone ? s.brittle.load / s.brittle.creak : 0;
+      if (s.gone && s.box.y < world.killY - 6) continue;
+
       ctx.save();
+      if (strain > 0) {
+        ctx.translate((Math.random() - 0.5) * strain * 0.14, 0);
+      }
+      if (s.gone) ctx.globalAlpha = 0.75;
       ctx.translate(b.x, b.y);
       ctx.rotate(b.angle);
 
       const radius = Math.min(0.14, Math.min(w, h) * 0.35);
 
-      ctx.shadowColor = isWall ? 'rgba(143,169,182,0.55)' : COLORS.groundEdge;
-      ctx.shadowBlur = 14;
-      ctx.fillStyle = isWall ? COLORS.wall : COLORS.ground;
+      ctx.shadowColor = isWall ? 'rgba(143,169,182,0.55)'
+        : strain > 0 ? 'rgba(255,140,110,0.9)' : COLORS.groundEdge;
+      ctx.shadowBlur = 14 + strain * 18;
+      ctx.fillStyle = isWall ? COLORS.wall
+        : strain > 0 ? mix(COLORS.ground, '#ff9a7a', strain) : COLORS.ground;
       roundRect(ctx, -b.hw, -b.hh, w, h, radius);
       ctx.fill();
       ctx.shadowBlur = 0;
@@ -250,15 +272,28 @@ export class Renderer {
       }
 
       // Anything that moves under you gets an outline, so it reads as special.
-      if (s.move || s.pulse || s.seesaw) {
-        ctx.strokeStyle = 'rgba(111, 242, 255, 0.7)';
+      if (s.move || s.pulse || s.brittle) {
+        ctx.strokeStyle = strain > 0 ? 'rgba(255, 150, 110, 0.95)' : 'rgba(111, 242, 255, 0.7)';
         ctx.lineWidth = 0.045;
         roundRect(ctx, -b.hw, -b.hh, w, h, radius);
         ctx.stroke();
-        ctx.fillStyle = 'rgba(111, 242, 255, 0.8)';
+        ctx.fillStyle = strain > 0 ? 'rgba(255, 150, 110, 0.95)' : 'rgba(111, 242, 255, 0.8)';
         for (const end of [-1, 1]) {
           ctx.fillRect(end * b.hw - 0.05, -b.hh - 0.02, 0.1, h + 0.04);
         }
+      }
+
+      // Cracks opening up across a plank that is about to go.
+      if (strain > 0.25) {
+        ctx.strokeStyle = `rgba(20, 12, 10, ${0.3 + strain * 0.5})`;
+        ctx.lineWidth = 0.05 + strain * 0.05;
+        ctx.beginPath();
+        for (let i = -2; i <= 2; i++) {
+          const x = (i / 2.6) * b.hw;
+          ctx.moveTo(x, -b.hh);
+          ctx.lineTo(x + 0.18 * strain, b.hh);
+        }
+        ctx.stroke();
       }
 
       ctx.restore();
