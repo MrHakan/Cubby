@@ -69,9 +69,32 @@ is climbable. The animated platforms follow the original AnimationClips: the
 Level 7 shuttle is `xmove.anim`'s two-second cosine sweep, and the Level 4
 platforms pulse on `MovingRectangle.anim`'s 2.58-second scale loop.
 
-Coyote time and a jump buffer are the one deliberate departure. They only make
+Coyote time and a jump buffer are the one deliberate feel change. They only make
 inputs land that were already going to work, so nothing the original refused
 becomes possible.
+
+### Level 3
+
+Level 3 is the one level whose geometry is not a straight conversion, because as
+authored it cannot be finished:
+
+- Leaving the middle ledge, the hanging wall blocks any rightward movement until
+  you have fallen below y = -3.16. By then you are falling at ~9.8 u/s and the
+  only landing is three units further right than the arc reaches. An exhaustive
+  sweep of ~200,000 launch positions, jump timings and air-control schedules
+  lands it **zero** times — every attempt falls into the kill plane.
+- The left wall's top is at y = 3.97, but the ramp that should continue from it
+  has its underside at y = 2.82–3.68 across the wall's whole width, so a climber
+  is stopped underneath it and can never stand on the wall.
+- Which leaves the 28-unit roof — the largest thing on screen and the obvious
+  route — unreachable.
+
+`tools/convert_scenes.py` therefore patches the level after conversion, in
+`fix_level3()`: two ledges added so the descent lands somewhere, and the ramp
+re-seated clear of the wall's climbing column. Every original platform is kept.
+The same sweep now succeeds 79,012 times, and an autopilot with no
+frame-accurate inputs finishes the level in 8 seconds. The roof is now a real
+alternate route down to the gate.
 
 ## Publishing
 
