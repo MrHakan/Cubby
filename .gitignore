@@ -57,3 +57,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 .md
+
+# Python bytecode from tools/
+__pycache__/
+*.py[cod]
