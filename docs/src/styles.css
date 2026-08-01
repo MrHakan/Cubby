@@ -131,7 +131,7 @@ html, body {
   overflow-y: auto;
 }
 
-.panel.wide { width: min(40rem, 100%); }
+.panel.wide { width: min(46rem, 100%); }
 
 .logo {
   margin: 0 0 0.35rem;
@@ -230,12 +230,26 @@ h3 {
 
 /* ---------------------------------------------------------- LEVEL SELECT */
 
+.chapter {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 1.3rem 0 0.55rem;
+  text-align: left;
+}
+
+.chapter:first-child { margin-top: 0; }
+.chapter h3 { margin: 0; }
+.chapter-note { font-size: 0.72rem; color: var(--ink-dim); flex: 1; }
+.chapter-count { font-size: 0.72rem; font-family: var(--mono); color: var(--ink-dim); }
+
 .level-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(7.4rem, 1fr));
-  gap: 0.6rem;
-  margin-bottom: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr));
+  gap: 0.5rem;
 }
+
+#level-grid { display: block; margin-bottom: 1.2rem; text-align: left; }
 
 .level-card {
   font: inherit;
@@ -253,8 +267,8 @@ h3 {
 
 .level-card:hover:not(:disabled) { background: rgba(111, 242, 255, 0.15); border-color: var(--cyan); }
 .level-card:disabled { opacity: 0.34; cursor: not-allowed; }
-.level-card .num { font-size: 0.7rem; letter-spacing: 0.14em; color: var(--cyan); text-transform: uppercase; }
-.level-card .name { font-weight: 600; font-size: 0.9rem; }
+.level-card .num { font-size: 0.68rem; letter-spacing: 0.14em; color: var(--cyan); text-transform: uppercase; }
+.level-card .name { font-weight: 600; font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .level-card .best { font-size: 0.72rem; color: var(--ink-dim); font-family: var(--mono); }
 .level-card.cleared { border-color: rgba(136, 255, 124, 0.4); }
 .level-card.cleared .num { color: var(--gate); }

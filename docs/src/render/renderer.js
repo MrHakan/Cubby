@@ -24,6 +24,10 @@ const COLORS = {
   cubbyEdge: '#ffffff',
   eye: '#0a1c26',
   boost: 'rgba(255, 122, 89, 0.5)',
+  spring: '#8affc4',
+  conveyor: '#ffd27a',
+  blink: '#b48bff',
+  spike: '#ff6b7f',
 };
 
 const POWERUP_STYLE = {
@@ -134,6 +138,7 @@ export class Renderer {
     this._zones(ctx, world, time);
     this._solids(ctx, world, time);
     this._decor(ctx, world, time);
+    this._spikes(ctx, world, time);
     this._goal(ctx, world, time);
     this._coins(ctx, world, time);
     this._powerups(ctx, world, time);
@@ -235,16 +240,25 @@ export class Renderer {
         ctx.translate((Math.random() - 0.5) * strain * 0.14, 0);
       }
       if (s.gone) ctx.globalAlpha = 0.75;
+      else if (s.blink) ctx.globalAlpha = s.fade;
       ctx.translate(b.x, b.y);
       ctx.rotate(b.angle);
+      if (s.spring && s.compress > 0) ctx.scale(1 + s.compress * 0.12, 1 - s.compress * 0.4);
 
       const radius = Math.min(0.14, Math.min(w, h) * 0.35);
 
+      const accent = s.spring ? COLORS.spring
+        : s.conveyor ? COLORS.conveyor
+        : s.blink ? COLORS.blink
+        : null;
+
       ctx.shadowColor = isWall ? 'rgba(143,169,182,0.55)'
-        : strain > 0 ? 'rgba(255,140,110,0.9)' : COLORS.groundEdge;
+        : strain > 0 ? 'rgba(255,140,110,0.9)'
+        : accent ? accent + 'cc' : COLORS.groundEdge;
       ctx.shadowBlur = 14 + strain * 18;
       ctx.fillStyle = isWall ? COLORS.wall
-        : strain > 0 ? mix(COLORS.ground, '#ff9a7a', strain) : COLORS.ground;
+        : strain > 0 ? mix(COLORS.ground, '#ff9a7a', strain)
+        : accent ? mix(COLORS.ground, accent, 0.5) : COLORS.ground;
       roundRect(ctx, -b.hw, -b.hh, w, h, radius);
       ctx.fill();
       ctx.shadowBlur = 0;
@@ -283,6 +297,45 @@ export class Renderer {
         }
       }
 
+      // Chevrons pointing the way a belt drags you.
+      if (s.conveyor) {
+        const dir = Math.sign(s.conveyor.speed) || 1;
+        ctx.strokeStyle = 'rgba(10, 32, 42, 0.55)';
+        ctx.lineWidth = 0.07;
+        ctx.beginPath();
+        const step = 0.55;
+        const slide = (time * s.conveyor.speed * 0.5) % step;
+        for (let x = -b.hw - step; x < b.hw + step; x += step) {
+          const px = x + slide * dir;
+          if (px < -b.hw + 0.05 || px > b.hw - 0.15) continue;
+          ctx.moveTo(px, -b.hh + 0.05);
+          ctx.lineTo(px + 0.14 * dir, 0);
+          ctx.lineTo(px, b.hh - 0.05);
+        }
+        ctx.stroke();
+      }
+
+      // A spring reads as a coiled pad.
+      if (s.spring) {
+        ctx.strokeStyle = 'rgba(10, 40, 30, 0.6)';
+        ctx.lineWidth = 0.06;
+        ctx.beginPath();
+        for (let i = -2; i <= 2; i++) {
+          const x = (i / 2.4) * b.hw;
+          ctx.moveTo(x, -b.hh + 0.04);
+          ctx.lineTo(x, b.hh - 0.04);
+        }
+        ctx.stroke();
+      }
+
+      // A blinking platform flashes just before it vanishes.
+      if (s.blink && s.warn) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+        ctx.lineWidth = 0.06;
+        roundRect(ctx, -b.hw, -b.hh, w, h, radius);
+        ctx.stroke();
+      }
+
       // Cracks opening up across a plank that is about to go.
       if (strain > 0.25) {
         ctx.strokeStyle = `rgba(20, 12, 10, ${0.3 + strain * 0.5})`;
@@ -296,6 +349,34 @@ export class Renderer {
         ctx.stroke();
       }
 
+      ctx.restore();
+    }
+  }
+
+  _spikes(ctx, world, time) {
+    for (const h of world.spikes) {
+      const teeth = Math.max(2, Math.round(h.w / 0.5));
+      const up = h.dir !== 'down';
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,107,127,0.8)';
+      ctx.shadowBlur = 12 + Math.sin(time * 3 + h.x) * 4;
+      ctx.fillStyle = COLORS.spike;
+      ctx.beginPath();
+      const x0 = h.x - h.w / 2;
+      const base = up ? h.y - h.h / 2 : h.y + h.h / 2;
+      const tip = up ? h.y + h.h / 2 : h.y - h.h / 2;
+      ctx.moveTo(x0, base);
+      for (let i = 0; i < teeth; i++) {
+        const a = x0 + (i * h.w) / teeth;
+        const b = x0 + ((i + 1) * h.w) / teeth;
+        ctx.lineTo((a + b) / 2, tip);
+        ctx.lineTo(b, base);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(255, 210, 215, 0.7)';
+      ctx.fillRect(x0, base - (up ? 0.06 : -0.06), h.w, 0.06);
       ctx.restore();
     }
   }
@@ -374,10 +455,10 @@ export class Renderer {
       ctx.shadowBlur = 22;
       ctx.fillStyle = COLORS.point;
       ctx.beginPath();
-      ctx.moveTo(0, 0.5);
-      ctx.lineTo(0.28 * spin, 0);
-      ctx.lineTo(0, -0.5);
-      ctx.lineTo(-0.28 * spin, 0);
+      ctx.moveTo(0, 0.66);
+      ctx.lineTo(0.3 * spin, 0);
+      ctx.lineTo(0, -0.66);
+      ctx.lineTo(-0.3 * spin, 0);
       ctx.closePath();
       ctx.fill();
       ctx.shadowBlur = 0;
@@ -385,10 +466,10 @@ export class Renderer {
       ctx.globalAlpha = 0.8;
       ctx.fillStyle = '#fffbe0';
       ctx.beginPath();
-      ctx.moveTo(0, 0.34);
-      ctx.lineTo(0.11 * spin, 0.02);
-      ctx.lineTo(0, -0.12);
-      ctx.lineTo(-0.11 * spin, 0.02);
+      ctx.moveTo(0, 0.44);
+      ctx.lineTo(0.12 * spin, 0.03);
+      ctx.lineTo(0, -0.16);
+      ctx.lineTo(-0.12 * spin, 0.03);
       ctx.closePath();
       ctx.fill();
       ctx.restore();

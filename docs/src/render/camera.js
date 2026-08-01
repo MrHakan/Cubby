@@ -14,7 +14,7 @@ import { clamp } from '../game/physics.js';
 // enough to see the next platform coming.
 const MIN_VIEW_W = 16;   // never show less of the level than this, side to side
 const MIN_VIEW_H = 11;   // nor less than this, top to bottom
-const MAX_VIEW_H = 26;   // the cube is never smaller than 1/26 of the screen
+const MAX_VIEW_H = 24;   // the cube is never smaller than 1/24 of the screen
 const MARGIN = 1.6;
 
 export class Camera {

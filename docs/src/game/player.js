@@ -85,7 +85,7 @@ export class Player {
    * @returns {{jumped: boolean, landed: number}} events for sound and particles
    */
   step(dt, input) {
-    const events = { jumped: false, landed: 0 };
+    const events = { jumped: false, landed: 0, sprung: 0 };
     if (this.dead) return events;
 
     // --- horizontal ------------------------------------------------------
@@ -96,6 +96,12 @@ export class Player {
     this.axis = approach(this.axis, target, rate * dt);
     if (target !== 0) this.facing = target;
     this.vx = this.axis * this.speed;
+
+    // A belt adds to your own speed rather than replacing it, so you can still
+    // walk against one — slowly.
+    if (this.groundSolid && this.groundSolid.conveyor) {
+      this.vx = clamp(this.vx + this.groundSolid.conveyor.speed, -this.speed - 5, this.speed + 5);
+    }
 
     // --- carried by a moving platform ------------------------------------
     if (this.groundSolid && (this.groundSolid.vx || this.groundSolid.vy)) {
@@ -131,7 +137,17 @@ export class Player {
     this._integrate(dt);
     this._probe();
 
-    if (this.grounded && !this.wasGrounded && fallSpeed < -6) {
+    // A spring fires the moment you touch it, and overrides the landing.
+    if (this.grounded && this.groundSolid && this.groundSolid.spring && this.vy <= 0) {
+      const power = this.groundSolid.spring.power;
+      this.vy = power;
+      this.groundSolid.compress = 1;
+      this.grounded = false;
+      this.coyote = 0;
+      this.squash = 1.4;
+      events.sprung = power;
+      this.groundSolid = null;
+    } else if (this.grounded && !this.wasGrounded && fallSpeed < -6) {
       events.landed = -fallSpeed;
       this.squash = -1;
     }
@@ -142,6 +158,7 @@ export class Player {
     this.tilt += (tiltTarget - this.tilt) * Math.min(1, dt * 8);
 
     if (this.y < this.world.killY) this.dead = true;
+    if (this.world.spikeAt(this.x, this.y, this.half * 0.8, this.half * 0.8)) this.dead = true;
 
     const b = this.world.bounds;
     if (this.x < b.minX - 14 || this.x > b.maxX + 14 || this.y > b.maxY + 40) this.dead = true;
@@ -168,7 +185,7 @@ export class Player {
     for (let pass = 0; pass < 2; pass++) {
       let touched = false;
       for (const solid of this.world.solids) {
-        if (solid.gone) continue;
+        if (solid.gone || solid.solidNow === false) continue;
         const hit = resolveAabbObb(this.x, this.y, hw, hh, solid.box);
         if (!hit) continue;
         touched = true;
@@ -201,7 +218,7 @@ export class Player {
     this.onWall = 0;
 
     for (const solid of this.world.solids) {
-      if (solid.gone) continue;
+      if (solid.gone || solid.solidNow === false) continue;
       if (solid.kind === 'ground' || solid.kind === 'plain') {
         const hit = resolveAabbObb(this.x, this.y - skin, hw * 0.92, hh, solid.box);
         if (hit && hit.ny > 0.55) {

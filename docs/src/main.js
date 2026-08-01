@@ -7,6 +7,9 @@ import { Audio } from './core/audio.js';
 import { Save, formatTime } from './core/storage.js';
 import { Game, BONUS_INDEX } from './game/game.js';
 import { LEVELS } from './game/levels.js';
+import { EXTRA_LEVELS } from './game/extra_levels.js';
+
+const ALL_LEVELS = [...LEVELS, ...EXTRA_LEVELS];
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -64,33 +67,58 @@ function show(name) {
 function renderTitleProgress() {
   const cleared = save.clearedCount();
   const parts = [];
-  if (cleared > 0) parts.push(`${cleared}/${LEVELS.length} levels cleared`);
+  if (cleared > 0) parts.push(`${cleared}/${ALL_LEVELS.length} levels cleared`);
   if (save.bestRun != null) parts.push(`best run ${formatTime(save.bestRun)}`);
   if (save.foundEasterEgg) parts.push('easter egg found');
   $('#title-progress').textContent = parts.length ? parts.join(' · ') : 'No runs yet';
 }
 
+/** 59 levels in one flat grid is a wall, so they are grouped into chapters. */
+const CHAPTERS = [
+  { name: 'The Original Nine', note: 'Converted from the Unity project', from: 0, to: LEVELS.length },
+  { name: 'New Ground', note: 'One new idea at a time', from: LEVELS.length, to: LEVELS.length + 13 },
+  { name: 'Combinations', note: 'Two at once', from: LEVELS.length + 13, to: LEVELS.length + 30 },
+  { name: 'The Long Way', note: 'Everything, tighter', from: LEVELS.length + 30, to: ALL_LEVELS.length },
+];
+
 function renderLevelGrid() {
-  const grid = $('#level-grid');
-  grid.innerHTML = '';
-  LEVELS.forEach((level, i) => {
-    const unlocked = save.isUnlocked(i);
-    const best = save.bestFor(i);
-    const card = document.createElement('button');
-    card.className = 'level-card' + (best != null ? ' cleared' : '');
-    card.disabled = !unlocked;
-    card.innerHTML =
-      `<span class="num">Level ${i + 1}</span>` +
-      `<span class="name"></span>` +
-      `<span class="best">${best != null ? formatTime(best) : '—'}</span>`;
-    card.querySelector('.name').textContent = unlocked ? level.title : 'Locked';
-    card.addEventListener('click', () => {
-      audio.unlock();
-      show(null);
-      game.startRun(i);
-    });
-    grid.append(card);
-  });
+  const host = $('#level-grid');
+  host.innerHTML = '';
+  for (const ch of CHAPTERS) {
+    const done = Array.from({ length: ch.to - ch.from }, (_, k) => ch.from + k)
+      .filter((i) => save.bestFor(i) != null).length;
+    const head = document.createElement('div');
+    head.className = 'chapter';
+    head.innerHTML = `<h3></h3><span class="chapter-note"></span>` +
+      `<span class="chapter-count">${done}/${ch.to - ch.from}</span>`;
+    head.querySelector('h3').textContent = ch.name;
+    head.querySelector('.chapter-note').textContent = ch.note;
+    host.append(head);
+
+    const grid = document.createElement('div');
+    grid.className = 'level-grid';
+    for (let i = ch.from; i < ch.to; i++) {
+      const level = ALL_LEVELS[i];
+      const unlocked = save.isUnlocked(i);
+      const best = save.bestFor(i);
+      const card = document.createElement('button');
+      card.className = 'level-card' + (best != null ? ' cleared' : '');
+      card.disabled = !unlocked;
+      card.innerHTML =
+        `<span class="num">${i + 1}</span>` +
+        `<span class="name"></span>` +
+        `<span class="best">${best != null ? formatTime(best) : '—'}</span>`;
+      card.querySelector('.name').textContent = unlocked ? level.title : 'Locked';
+      card.addEventListener('click', () => {
+        audio.unlock();
+        audio.sfx('select');
+        show(null);
+        game.startRun(i);
+      });
+      grid.append(card);
+    }
+    host.append(grid);
+  }
 }
 
 // -------------------------------------------------------------------- HUD
@@ -156,7 +184,7 @@ game.on('finish', (info) => {
 
 const ACTIONS = {
   play() {
-    const resume = save.unlocked > 1 && save.unlocked <= LEVELS.length;
+    const resume = save.unlocked > 1 && save.unlocked <= ALL_LEVELS.length;
     show(null);
     game.startRun(resume ? save.unlocked - 1 : 0);
   },
@@ -216,7 +244,7 @@ show('title');
 tickHud();
 
 // Handy from the devtools console, and what the smoke test drives.
-window.cubby = { game, save, audio, input, LEVELS };
+window.cubby = { game, save, audio, input, LEVELS: ALL_LEVELS };
 
 // One frame of the first level renders behind the title screen so the page
 // never shows an empty black box.

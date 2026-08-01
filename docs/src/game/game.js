@@ -4,11 +4,15 @@
  */
 
 import { LEVELS, BONUS_LEVEL } from './levels.js';
+import { EXTRA_LEVELS } from './extra_levels.js';
 import { World } from './world.js';
 import { Player } from './player.js';
 import { Renderer } from '../render/renderer.js';
 import { Camera } from '../render/camera.js';
 import { Particles } from '../render/particles.js';
+
+/** The nine converted Unity levels, then the extended set. */
+const ALL_LEVELS = [...LEVELS, ...EXTRA_LEVELS];
 
 const FIXED_DT = 1 / 120;
 const MAX_FRAME = 0.25;
@@ -76,9 +80,12 @@ export class Game {
 
   // -------------------------------------------------------------- flow
 
-  get levelCount() { return LEVELS.length; }
+  get levelCount() { return ALL_LEVELS.length; }
 
-  levelData(index) { return index === BONUS_INDEX ? BONUS_LEVEL : LEVELS[index]; }
+  /** How many levels came from the original Unity project. */
+  get baseLevelCount() { return LEVELS.length; }
+
+  levelData(index) { return index === BONUS_INDEX ? BONUS_LEVEL : ALL_LEVELS[index]; }
 
   startRun(index = 0) {
     this.runTime = 0;
@@ -240,19 +247,25 @@ export class Game {
       this.particles.dust(player.x, player.y - player.half, Math.min(2, events.landed / 9));
       this.camera.kick(Math.min(0.25, events.landed / 90));
     }
+    if (events.sprung > 0) {
+      this.audio.sfx('spring');
+      this.particles.ring(player.x, player.y - player.half, '#8affc4', 14, 4);
+      this.camera.kick(0.22);
+    }
     if (player.boosted && player.grounded && Math.abs(player.vx) > 6) {
       this.particles.trail(player.x - player.facing * 0.3, player.y - player.half * 0.4,
         'rgba(255,150,110,0.7)');
     }
 
-    // A plank giving way under a heavy cube is the big beat of Level 6.
+    // Something giving way underfoot: Level 6's plank, or a crumbling tile.
     for (const s of world.solids) {
       if (s.brittle && s.gone && !s.announced) {
         s.announced = true;
-        this.audio.play('death', { rate: 0.55, gain: 0.5 });
-        this.camera.kick(0.55);
-        this.particles.burst(s.box.x, s.box.y, '#eef8ff', 20, 6);
-        this.particles.burst(s.box.x, s.box.y, '#ff9a7a', 10, 4);
+        const heavy = s.brittle.holds > 0;
+        this.audio.sfx('crumble');
+        this.camera.kick(heavy ? 0.55 : 0.28);
+        this.particles.burst(s.box.x, s.box.y, '#eef8ff', heavy ? 20 : 12, heavy ? 6 : 4);
+        this.particles.burst(s.box.x, s.box.y, '#ff9a7a', heavy ? 10 : 6, 4);
       }
     }
 
@@ -276,6 +289,7 @@ export class Game {
       this.particles.burst(coin.x, coin.y, '#ffea55', 14, 5.5);
       this._emitHud();
       if (world.coinsLeft === 0 && world.goal) {
+        this.audio.sfx('unlock');
         this.particles.ring(world.goal.x, world.goal.y, '#88ff7c', 22, 5);
       }
     });
@@ -298,7 +312,7 @@ export class Game {
     }
 
     if (this.levelIndex !== BONUS_INDEX && world.zoneAt(p.x, p.y, hw, hh, 'easteregg')) {
-      this.returnIndex = Math.min(this.levelIndex + 1, LEVELS.length - 1);
+      this.returnIndex = Math.min(this.levelIndex + 1, ALL_LEVELS.length - 1);
       this.save.markEasterEgg();
       this.loadLevel(BONUS_INDEX);
       return;
@@ -313,16 +327,21 @@ export class Game {
     if (world.goal && world.coinsLeft === 0 && world.atGoal(p.x, p.y, hw, hh)) {
       this.state = 'cleared';
       this.hold = CLEAR_HOLD;
+      this.audio.sfx('clear');
       this.particles.burst(p.x, p.y, '#88ff7c', 26, 8);
+      this.particles.ring(p.x, p.y, '#ffffff', 24, 7);
       this.camera.kick(0.3);
     }
   }
 
   _die() {
+    const onSpikes = this.world.spikeAt(this.player.x, this.player.y,
+      this.player.half * 0.9, this.player.half * 0.9);
     this.state = 'dying';
     this.hold = DEATH_HOLD;
     this.deaths++;
     this.runDeaths++;
+    if (onSpikes) this.audio.sfx('spike');
     this.audio.play('death');
     this.camera.kick(0.75);
     this.particles.burst(this.player.x, this.player.y, '#c2e3ff', 22, 7);
@@ -342,7 +361,7 @@ export class Game {
     const best = this.save.recordLevel(index, time);
     this.save.unlock(index + 1);
 
-    const isLast = index >= LEVELS.length - 1;
+    const isLast = index >= ALL_LEVELS.length - 1;
     if (isLast) {
       const runTime = this.runTime;
       const bestRun = this.runActive ? this.save.recordRun(runTime) : false;
@@ -367,7 +386,7 @@ export class Game {
   }
 
   nextLevel() {
-    if (this.levelIndex + 1 < LEVELS.length) this.loadLevel(this.levelIndex + 1);
+    if (this.levelIndex + 1 < ALL_LEVELS.length) this.loadLevel(this.levelIndex + 1);
   }
 
   _emitHud() {

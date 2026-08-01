@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#0a1a22">
 <title>Cubby</title>
-<meta name="description" content="Cubby — a small precision platformer. Collect every point, then reach the gate.">
+<meta name="description" content="Cubby — a precision platformer in 59 levels. Collect every point, then reach the gate.">
 <meta property="og:title" content="Cubby">
-<meta property="og:description" content="A small precision platformer. Collect every point, then reach the gate.">
+<meta property="og:description" content="A precision platformer in 59 levels. Collect every point, then reach the gate.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="src/styles.css">
@@ -31,7 +31,7 @@
   <section id="screen-title" class="overlay screen">
     <div class="panel">
       <h1 class="logo">CUBBY<span class="cursor"></span></h1>
-      <p class="tagline">Collect every point, then reach the gate.</p>
+      <p class="tagline">59 levels. Collect every point, then reach the gate.</p>
       <div class="menu">
         <button class="btn primary" data-action="play">Play</button>
         <button class="btn" data-action="levels">Levels</button>
@@ -48,7 +48,7 @@
   <section id="screen-levels" class="overlay screen" hidden>
     <div class="panel wide">
       <h2>Levels</h2>
-      <div id="level-grid" class="level-grid"></div>
+      <div id="level-grid"></div>
       <div class="menu">
         <button class="btn" data-action="title">Back</button>
         <button class="btn ghost" data-action="wipe">Reset progress</button>
@@ -77,9 +77,15 @@
         <div>
           <h3>Tricks</h3>
           <ul class="tricks">
-            <li><b>Wall climbing</b> — press into a grey wall and keep jumping to scale it.</li>
+            <li><b>Wall climbing</b> — press into a grey hatched wall and keep jumping to scale it.</li>
             <li><b>S / N / B orbs</b> — shrink, reset, or grow. Size changes your mass.</li>
-            <li><b>Gravity orbs</b> — flip your fall, or drag yourself back down.</li>
+            <li><b>Gravity orbs</b> — <kbd>↑</kbd> flips your fall, <kbd>↓</kbd> ends it.</li>
+            <li><b>Green pads</b> — springs. They throw you far higher than a jump.</li>
+            <li><b>Amber belts</b> — drag you along. You can walk against one, slowly.</li>
+            <li><b>Violet platforms</b> — phase out. They flash before they go, and never
+              vanish while you are standing on one.</li>
+            <li><b>Cracked tiles</b> — give way underfoot, then grow back. Keep moving.</li>
+            <li><b>Red spikes</b> — instant death. Jump the trench.</li>
             <li><b>Speed strips</b> — some floors make you fast for the rest of the level.</li>
           </ul>
         </div>

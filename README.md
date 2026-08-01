@@ -1,11 +1,12 @@
 # Cubby
 
-A small precision platformer: collect every yellow point in a level, then reach
-the green gate.
+A precision platformer in 59 levels: collect every yellow point, then reach the
+green gate.
 
-Cubby started life as a Unity 2020.3 project on 6 August 2021. It now also runs
-in the browser — the nine levels were converted straight out of the original
-Unity scenes, and the web build is what gets published to GitHub Pages.
+Cubby started life as a Unity 2020.3 project on 6 August 2021. It now runs in
+the browser too. The original nine levels were converted straight out of the
+Unity scenes; fifty more were built on top of them, along with the mechanics
+they are made of. The web build is what gets published to GitHub Pages.
 
 **▶ Play: https://mrhakan.github.io/Cubby/**
 
@@ -27,6 +28,12 @@ On a touch screen the game shows its own pads.
 - **Wall climbing** — press into a grey hatched wall and keep jumping to scale it.
 - **S / N / B orbs** — shrink, reset, or grow. Your size also changes your mass.
 - **Gravity orbs** — `↑` flips your fall so you drift upward, `↓` drops you back down.
+- **Green pads** — springs, which throw you far higher and further than a jump.
+- **Amber belts** — conveyors. You can walk against one, slowly.
+- **Violet platforms** — phase out on a cycle. They flash first, and never vanish
+  while you are standing on one.
+- **Cracked tiles** — give way underfoot and grow back a couple of seconds later.
+- **Red spikes** — instant death.
 - **Speed strips** — some floors make you fast for the rest of the level.
 - There is one easter egg. It is behind a door that does not look like a door.
 
@@ -40,7 +47,7 @@ docs/              the web build — this is what GitHub Pages serves
   src/game/          physics, world, player, level flow, generated level data
   src/render/        camera, canvas renderer, particles
   assets/audio/      the original .wav clips
-tools/             the Unity scene → JavaScript converter
+tools/             the Unity scene converter, the level generator, the validator
 .github/workflows/ the Pages deployment
 ```
 
@@ -60,6 +67,23 @@ writes `docs/src/game/levels.js`. Re-run it whenever a scene changes:
 ```sh
 python3 tools/convert_scenes.py
 ```
+
+The other fifty are composed by `tools/generate_levels.py` out of hand-designed
+chunks, each sized against the cube's actual movement envelope. Composition
+alone does not prove a level can be finished, so `tools/validate_levels.mjs`
+drives a bot through every one of them:
+
+```sh
+cd docs && python3 -m http.server 8099 &      # the validator drives a real page
+node tools/validate_levels.mjs                # reports which levels are finishable
+node tools/validate_levels.mjs --search       # re-seeds the ones that are not
+```
+
+The bot holds right, jumps when the ground runs out or something red is coming,
+waits for ferries, and climbs walls by jumping into them — then retries from
+banked checkpoints with jittered timing when it dies. A level ships only once
+that bot has collected every point and reached the gate; the seeds that passed
+are pinned in `tools/level_seeds.json`. All 50 currently pass.
 
 Physics tuning is taken from the Unity project rather than re-invented: speed 7
 (12 while boosted), jump force 7, mass 1, gravity scale 1.4 against Physics2D's
