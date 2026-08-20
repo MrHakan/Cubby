@@ -68,10 +68,33 @@ writes `docs/src/game/levels.js`. Re-run it whenever a scene changes:
 python3 tools/convert_scenes.py
 ```
 
-The other fifty are composed by `tools/generate_levels.py` out of hand-designed
-chunks, each sized against the cube's actual movement envelope. Composition
-alone does not prove a level can be finished, so `tools/validate_levels.mjs`
-drives a bot through every one of them:
+The other fifty are composed by `tools/generate_levels.py` to a brief, out of
+hand-designed chunks sized against the cube's actual movement envelope. The
+rules it composes to, and why:
+
+| Rule | In practice |
+| --- | --- |
+| Introduce, develop, twist, conclude | Every level has one theme mechanic and works through it in beats, closing on a demanding statement of it. The twist beat is always a *different*, already-taught mechanic — a level made of four helpings of one idea is monotonous. |
+| Teach where failure is cheap | A mechanic's first encounters sit over a safety net one jump below. Only once the level has taught it does it appear over a real pit. |
+| Tension and release | Rest beats follow the peaks, and every level ends on a calm run to the gate rather than on panic. |
+| No leaps of faith | Descents are capped so the landing is on screen when you commit. Anything deeper is a staircase of visible ledges. |
+| Nothing dead | A pass walks each route and punctuates any stretch where nothing happens, splitting it with a gap or laying a spike strip across it. |
+| Points are signposts | They mark the reward after a hard beat, the top of the climax, the calm before the gate — not whatever slab was widest. |
+| Silhouette | Each level takes an elevation profile — climb, descend, valley, mesa, rolling — so the set is not fifty variations on one flat line. |
+| Sawtooth difficulty | Difficulty ramps inside a chapter and eases at the start of the next, so new ideas arrive with the other demands relaxed. |
+| Safe to start and finish | The opening ledge and the run to the gate are never punctuated or garnished. |
+
+Measured against the first version of the generator:
+
+| | before | after |
+| --- | --- | --- |
+| blind drops (landing off screen) | 60% of descents | **0%** |
+| median height range (silhouette) | 4.8 units | **8.7 units** |
+| worst stretch with nothing happening | 41.5 units (~6 s) | **14.9 units (~2 s)** |
+| levels with no hazard at all | 31 of 50 | **4 of 50** |
+
+Composition still does not prove a level can be finished, so
+`tools/validate_levels.mjs` drives a bot through every one of them:
 
 ```sh
 cd docs && python3 -m http.server 8099 &      # the validator drives a real page

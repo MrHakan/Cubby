@@ -61,3 +61,6 @@ crashlytics-build.properties
 # Python bytecode from tools/
 __pycache__/
 *.py[cod]
+
+# Local tooling only (playwright for the level validator)
+node_modules/

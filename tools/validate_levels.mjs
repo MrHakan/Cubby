@@ -116,6 +116,13 @@ const BOT = function botSource() {
         }
         return top;
       };
+      // Ground ahead at a height you could actually step onto. Without the
+      // height band a safety net far below reads as "ground ahead", and the bot
+      // walks off a lift the moment it boards one.
+      const stepUpAhead = (x, y, tol) => {
+        const t = solidTop(x, y + tol);
+        return t !== -Infinity && Math.abs(t - y) <= tol;
+      };
       const spikeAhead = (x, y, reach) => w.spikes.some((h) =>
         h.x + h.w / 2 >= x && h.x - h.w / 2 <= x + reach && Math.abs(h.y - y) < 3);
 
@@ -134,8 +141,8 @@ const BOT = function botSource() {
           }
           if (waitStyle) {
             if (p.groundSolid && p.groundSolid.move) {
-              // On a ferry: sit tight until real ground is within reach.
-              axis = solidTop(p.x + 3.0, feet) === -Infinity ? 0 : 1;
+              // On a ferry: sit tight until ground level with us is in reach.
+              axis = stepUpAhead(p.x + 3.0, feet, 0.5) ? 1 : 0;
             } else if (ahead === -Infinity && solidTop(p.x + look + 2.8, feet) === -Infinity) {
               const ferry = w.solids.some((q) => q.move && !q.gone &&
                 q.box.x > p.x - 1.5 && q.box.x < p.x + 5 &&
