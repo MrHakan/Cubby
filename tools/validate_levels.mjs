@@ -89,14 +89,19 @@ const BOT = function botSource() {
       return { p, w };
     };
 
-    const banks = [];
+    const banks = new Map();          // one snapshot per 3-unit slice of level
     let best = { x: -Infinity, coinsLeft: 99 };
 
     for (let attempt = 0; attempt < attempts; attempt++) {
       // First few runs start clean; after that, resume from banked progress.
-      const seed = attempt < 3 || banks.length === 0
+      // The banks form a ladder up the level, and the draw is weighted hard
+      // toward the top of it: sampled evenly, nearly every attempt would go
+      // back to re-running ground the bot has already proved it can cross,
+      // and the end of a long level would never be reached at all.
+      const ladder = [...banks.values()].sort((a, b) => a.x - b.x);
+      const seed = attempt < 3 || !ladder.length
         ? null
-        : banks[Math.min(banks.length - 1, Math.floor(rnd() * banks.length * 1.3))];
+        : ladder[Math.min(ladder.length - 1, Math.floor(ladder.length * (1 - rnd() ** 2)))];
       const { p, w } = restore(seed);
 
       const look = 1.0 + rnd() * 1.6;
@@ -167,13 +172,19 @@ const BOT = function botSource() {
         if (game.state === 'cleared') return { ok: true, attempt, t: +(step / 120).toFixed(1) };
         if (p.dead) break;
 
-        // Bank standing-still-on-solid-ground progress for later attempts.
+        // Bank standing-still-on-solid-ground progress for later attempts —
+        // but only from a position that is still winnable. The bot only ever
+        // travels right, so a bank taken with a coin left behind can never be
+        // completed from, and once such a bank is the furthest one every
+        // resumed attempt inherits the same dead run.
         sinceBank++;
         if (p.grounded && p.x > maxX + 2.5 && sinceBank > 30 &&
+            !w.coins.some((c) => !c.taken && c.x < p.x - 0.6) &&
             !(p.groundSolid && (p.groundSolid.move || p.groundSolid.brittle || p.groundSolid.blink))) {
           maxX = p.x;
           sinceBank = 0;
-          if (banks.length < 220) banks.push(snapshot(p, w));
+          const slice = Math.round(p.x / 3);
+          if (!banks.has(slice)) banks.set(slice, snapshot(p, w));
         }
         if (p.x > best.x) best = { x: +p.x.toFixed(1), y: +p.y.toFixed(1), coinsLeft: w.coinsLeft };
       }
@@ -184,17 +195,6 @@ const BOT = function botSource() {
              goalX: w.goal ? +w.goal.x.toFixed(1) : null };
   };
 };
-
-const CONFIGS = [];
-for (const look of [1.0, 1.4, 1.9, 2.4]) {
-  for (const cooldown of [6, 12, 20]) {
-    for (const patience of [6, 14]) {
-      for (const wait of [true, false]) {
-        CONFIGS.push({ look, cooldown, patience, wait, seconds: 75 });
-      }
-    }
-  }
-}
 
 function regenerate() {
   execFileSync('python3', [join(HERE, 'generate_levels.py')], { cwd: ROOT, stdio: 'pipe' });
@@ -248,7 +248,7 @@ async function main() {
           fixed = true;
         }
       }
-      if (!fixed) console.log(`  extra ${idx + 1}: STILL FAILING after 60 seeds`);
+      if (!fixed) console.log(`  extra ${idx + 1}: STILL FAILING after 14 seeds`);
     }
   }
 

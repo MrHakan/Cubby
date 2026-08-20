@@ -82,6 +82,7 @@ rules it composes to, and why:
 | Points are signposts | They mark the reward after a hard beat, the top of the climax, the calm before the gate — not whatever slab was widest. |
 | Silhouette | Each level takes an elevation profile — climb, descend, valley, mesa, rolling — so the set is not fifty variations on one flat line. |
 | Sawtooth difficulty | Difficulty ramps inside a chapter and eases at the start of the next, so new ideas arrive with the other demands relaxed. |
+| Keep the flow | A moving obstacle is timed to the runner, not to itself. Every cycling feature — blinking tiles, lifts, ferries — has its phase set from how long it takes to run there at speed 7, so holding your pace carries you straight through. Arrive off the beat and you wait one cycle: a legible cost, not a coin flip. |
 | Safe to start and finish | The opening ledge and the run to the gate are never punctuated or garnished. |
 
 Measured against the first version of the generator:
@@ -92,6 +93,19 @@ Measured against the first version of the generator:
 | median height range (silhouette) | 4.8 units | **8.7 units** |
 | worst stretch with nothing happening | 41.5 units (~6 s) | **14.9 units (~2 s)** |
 | levels with no hazard at all | 31 of 50 | **4 of 50** |
+
+And against the version before the cycling features were timed to the runner —
+a bot that holds right and never deliberately waits, across the 11 levels that
+have a cycling feature:
+
+| | before | after |
+| --- | --- | --- |
+| worst level, time forced to stand still | 1.8 s | **0.7 s** |
+| all 11 levels together | 5.9 s | **3.4 s** |
+| how far that bot gets, mean | 61% of the way to the gate | **68%** |
+
+The structural worst case — arriving exactly as a cycle turns over — was 10.1 s
+before and is one cycle now, by construction.
 
 Composition still does not prove a level can be finished, so
 `tools/validate_levels.mjs` drives a bot through every one of them:
@@ -104,7 +118,12 @@ node tools/validate_levels.mjs --search       # re-seeds the ones that are not
 
 The bot holds right, jumps when the ground runs out or something red is coming,
 waits for ferries, and climbs walls by jumping into them — then retries from
-banked checkpoints with jittered timing when it dies. A level ships only once
+banked checkpoints with jittered timing when it dies. A checkpoint is only
+banked from a position the run can still be won from, with no point left
+behind: the bot never turns round, so a bank taken past a missed point poisons
+every attempt that resumes from it. The banks form a ladder up the level and
+the draw is weighted toward the top of it, or a long level's ending never gets
+attempted at all. A level ships only once
 that bot has collected every point and reached the gate; the seeds that passed
 are pinned in `tools/level_seeds.json`. All 50 currently pass.
 

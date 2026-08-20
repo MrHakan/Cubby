@@ -1627,7 +1627,8 @@ export const EXTRA_LEVELS = [
      "axis": "y",
      "center": 0.896,
      "amp": 1.596,
-     "period": 3.957
+     "period": 3.957,
+     "phase": 0.247
     }
    },
    {
@@ -1682,7 +1683,8 @@ export const EXTRA_LEVELS = [
      "axis": "y",
      "center": -2.112,
      "amp": 1.46,
-     "period": 4.238
+     "period": 4.238,
+     "phase": 0.845
     }
    },
    {
@@ -1821,7 +1823,8 @@ export const EXTRA_LEVELS = [
      "axis": "y",
      "center": -2.432,
      "amp": 1.794,
-     "period": 3.559
+     "period": 3.559,
+     "phase": 0.915
     }
    },
    {
@@ -1916,7 +1919,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": 0.0
+     "phase": 0.755
     }
    },
    {
@@ -1928,7 +1931,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": -0.18
+     "phase": 0.596
     }
    },
    {
@@ -1940,7 +1943,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": -0.36
+     "phase": 0.441
     }
    },
    {
@@ -1987,7 +1990,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": 0.0
+     "phase": 0.472
     }
    },
    {
@@ -1999,7 +2002,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": -0.18
+     "phase": 0.311
     }
    },
    {
@@ -2011,7 +2014,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": -0.36
+     "phase": 0.158
     }
    },
    {
@@ -2079,7 +2082,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": 0.0
+     "phase": 0.413
     }
    },
    {
@@ -2091,7 +2094,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": -0.18
+     "phase": 0.265
     }
    },
    {
@@ -2103,7 +2106,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.65,
      "on": 1.643,
-     "phase": -0.36
+     "phase": 0.102
     }
    },
    {
@@ -2199,7 +2202,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 11.645,
      "amp": 2.845,
-     "period": 3.293
+     "period": 3.293,
+     "phase": 0.214
     }
    },
    {
@@ -2247,7 +2251,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 35.924,
      "amp": 2.912,
-     "period": 3.229
+     "period": 3.229,
+     "phase": 0.627
     }
    },
    {
@@ -2393,7 +2398,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 116.136,
      "amp": 3.31,
-     "period": 4.151
+     "period": 4.151,
+     "phase": 0.907
     }
    },
    {
@@ -7770,7 +7776,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 12.042,
      "amp": 3.242,
-     "period": 4.001
+     "period": 4.001,
+     "phase": 0.264
     }
    },
    {
@@ -7804,7 +7811,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 27.494,
      "amp": 2.61,
-     "period": 4.047
+     "period": 4.047,
+     "phase": 0.205
     }
    },
    {
@@ -7887,7 +7895,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 73.273,
      "amp": 3.157,
-     "period": 3.284
+     "period": 3.284,
+     "phase": 0.321
     }
    },
    {
@@ -9549,7 +9558,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 12.174,
      "amp": 3.374,
-     "period": 3.458
+     "period": 3.458,
+     "phase": 0.227
     }
    },
    {
@@ -9611,7 +9621,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 44.015,
      "amp": 3.313,
-     "period": 3.773
+     "period": 3.773,
+     "phase": 0.584
     }
    },
    {
@@ -9715,7 +9726,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 102.978,
      "amp": 3.174,
-     "period": 3.197
+     "period": 3.197,
+     "phase": 0.008
     }
    },
    {
@@ -9811,7 +9823,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 11.41,
      "amp": 2.61,
-     "period": 3.724
+     "period": 3.724,
+     "phase": 0.247
     }
    },
    {
@@ -9873,7 +9886,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 41.45,
      "amp": 2.599,
-     "period": 3.612
+     "period": 3.612,
+     "phase": 0.535
     }
    },
    {
@@ -9980,7 +9994,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 96.097,
      "amp": 3.153,
-     "period": 3.061
+     "period": 3.061,
+     "phase": 0.067
     }
    },
    {
@@ -10647,7 +10662,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 12.215,
      "amp": 3.415,
-     "period": 3.536
+     "period": 3.536,
+     "phase": 0.233
     }
    },
    {
@@ -10695,7 +10711,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 37.213,
      "amp": 2.931,
-     "period": 3.636
+     "period": 3.636,
+     "phase": 0.753
     }
    },
    {
@@ -10788,7 +10805,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 86.745,
      "amp": 2.851,
-     "period": 3.252
+     "period": 3.252,
+     "phase": 0.808
     }
    },
    {
@@ -10891,7 +10909,8 @@ export const EXTRA_LEVELS = [
      "axis": "y",
      "center": 0.819,
      "amp": 1.519,
-     "period": 4.058
+     "period": 4.058,
+     "phase": 0.254
     }
    },
    {
@@ -10932,7 +10951,8 @@ export const EXTRA_LEVELS = [
      "axis": "y",
      "center": 3.791,
      "amp": 1.451,
-     "period": 3.986
+     "period": 3.986,
+     "phase": 0.926
     }
    },
    {
@@ -11029,7 +11049,8 @@ export const EXTRA_LEVELS = [
      "axis": "y",
      "center": 10.873,
      "amp": 1.804,
-     "period": 3.636
+     "period": 3.636,
+     "phase": 0.124
     }
    },
    {
@@ -11642,7 +11663,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 11.933,
      "amp": 3.133,
-     "period": 3.435
+     "period": 3.435,
+     "phase": 0.226
     }
    },
    {
@@ -11690,7 +11712,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 37.371,
      "amp": 3.356,
-     "period": 4.147
+     "period": 4.147,
+     "phase": 0.99
     }
    },
    {
@@ -11773,7 +11796,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 85.133,
      "amp": 2.525,
-     "period": 4.019
+     "period": 4.019,
+     "phase": 0.698
     }
    },
    {
@@ -11869,7 +11893,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 11.519,
      "amp": 2.719,
-     "period": 4.128
+     "period": 4.128,
+     "phase": 0.272
     }
    },
    {
@@ -11931,7 +11956,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 42.843,
      "amp": 3.238,
-     "period": 3.124
+     "period": 3.124,
+     "phase": 0.129
     }
    },
    {
@@ -12083,7 +12109,8 @@ export const EXTRA_LEVELS = [
      "axis": "x",
      "center": 106.276,
      "amp": 3.381,
-     "period": 4.0
+     "period": 4.0,
+     "phase": 0.997
     }
    },
    {
@@ -12849,7 +12876,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": 0.0
+     "phase": 0.707
     }
    },
    {
@@ -12861,7 +12888,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.18
+     "phase": 0.513
     }
    },
    {
@@ -12873,7 +12900,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.36
+     "phase": 0.313
     }
    },
    {
@@ -12885,7 +12912,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.54
+     "phase": 0.126
     }
    },
    {
@@ -12932,7 +12959,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": 0.0
+     "phase": 0.914
     }
    },
    {
@@ -12944,7 +12971,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.18
+     "phase": 0.721
     }
    },
    {
@@ -12956,7 +12983,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.36
+     "phase": 0.527
     }
    },
    {
@@ -12968,7 +12995,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.54
+     "phase": 0.328
     }
    },
    {
@@ -13085,7 +13112,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": 0.0
+     "phase": 0.879
     }
    },
    {
@@ -13097,7 +13124,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.18
+     "phase": 0.683
     }
    },
    {
@@ -13109,7 +13136,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.36
+     "phase": 0.486
     }
    },
    {
@@ -13121,7 +13148,7 @@ export const EXTRA_LEVELS = [
     "blink": {
      "period": 2.216,
      "on": 1.374,
-     "phase": -0.54
+     "phase": 0.288
     }
    },
    {

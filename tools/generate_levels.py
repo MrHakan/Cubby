@@ -69,6 +69,7 @@ MAX_RISE = 1.35    # step up it can make while running
 MAX_BLIND = 2.2    # deepest drop that still shows its landing before you commit
 NET_DROP = 1.4     # safety net sits one comfortable hop below the floor it saves
 THICK = 0.5
+RUN = 7.0          # the cube's run speed, and so the pace a level is timed to
 
 
 def r(v, n=3):
@@ -91,6 +92,31 @@ class Build:
         self.min_y = 0.0
         self.path = []      # plain stationary floor the route walks on
         self.marks = []     # (x, y, importance) candidates for signpost points
+        self.extra_t = 0.0  # time spent not running: climbs, drifts, rides
+
+    @property
+    def t(self):
+        """Roughly when a runner keeping pace reaches the current build head.
+
+        Horizontal ground is covered at RUN, and everything that is not running
+        — climbing a wall, drifting up under antigravity, riding a lift — adds
+        its own cost. It only has to be good to a fraction of a second: cycles
+        are phase-locked to this, and their ready windows are wide enough to
+        absorb the error.
+        """
+        return self.x / RUN + self.extra_t
+
+    def phase_for_cycle(self, period, lead=0.0):
+        """Phase that puts a cosine-driven platform at its near end on arrival.
+
+        world.js drives these as center + amp*cos(TAU*(time/period + phase)), so
+        the near end is cos = -1, i.e. TAU*(t/period + phase) = pi.
+        """
+        return r((0.5 - (self.t + lead) / period) % 1.0)
+
+    def phase_for_blink(self, period, lead=0.0):
+        """Phase that starts a blinker's solid window as the runner arrives."""
+        return r((-(self.t + lead) / period) % 1.0)
 
     # -- primitives --------------------------------------------------------
 
@@ -254,15 +280,23 @@ def c_crumble(b, ctx):
 
 
 def c_blink(b, ctx):
+    """Phasing platforms, timed to the runner rather than to each other.
+
+    A cycle the level does not time is a dead stop: arrive off the beat and you
+    stand at the lip until it comes round. Each tile's solid window is opened
+    just before a runner keeping pace reaches it, so holding your rhythm carries
+    you straight across. Arrive late and you wait one cycle — a fair, legible
+    cost rather than a coin flip.
+    """
     b.slab(b.x, b.x + 2.5, b.y)
     b.x += 2.5
     n = 3 if ctx['hard'] < 0.55 else 4
     period = 2.8 - 0.6 * ctx['hard']
     start = b.x
-    for i in range(n):
-        # Staggered phases, so a steady walk meets each one solid.
+    for _ in range(n):
         b.slab(b.x, b.x + 2.2, b.y,
-               blink={'period': r(period), 'on': r(period * 0.62), 'phase': r(-i * 0.18)})
+               blink={'period': r(period), 'on': r(period * 0.62),
+                      'phase': b.phase_for_blink(period, lead=-0.35)})
         b.x += 2.2 + b.rng.uniform(0.5, 1.0)
     if ctx['safe']:
         b.net(start, b.x, b.y)
@@ -300,11 +334,14 @@ def c_lift(b, ctx):
     high = entry + rise + DOCK
     mid = (low + high) / 2
     width = 4.2 if ctx['safe'] else 3.4
+    period = b.rng.uniform(3.6, 4.4) if ctx['safe'] else b.rng.uniform(3.0, 4.2)
+    # Waiting at the bottom of a lift shaft is the least interesting thing a
+    # platformer can ask for, so it is down and open as you arrive.
     b.slab(b.x, b.x + width, mid, walkable=False,
            move={'axis': 'y', 'center': r(mid - THICK / 2), 'amp': r((high - low) / 2),
-                 'period': r(b.rng.uniform(3.6, 4.4) if ctx['safe']
-                             else b.rng.uniform(3.0, 4.2))})
+                 'period': r(period), 'phase': b.phase_for_cycle(period, lead=-0.2)})
     b.x += width + 0.4
+    b.extra_t += period / 2          # the ride up
     b.y = entry + rise
     b.protect(b.slab(b.x, b.x + 5.0, b.y))       # step off the lift onto this
     b.mark(b.x + 2.4, 2)
@@ -320,9 +357,11 @@ def c_shuttle(b, ctx):
     span = b.rng.uniform(6.5, 8.5)
     centre = b.x + span / 2
     amp = max(0.8, span / 2 - half + DOCK)
+    period = b.rng.uniform(3.0, 4.2)
     b.slab(centre - half, centre + half, b.y, walkable=False,
            move={'axis': 'x', 'center': r(centre), 'amp': r(amp),
-                 'period': r(b.rng.uniform(3.0, 4.2))})
+                 'period': r(period), 'phase': b.phase_for_cycle(period, lead=-0.2)})
+    b.extra_t += period / 2          # the ride across
     if ctx['safe']:
         b.net(b.x, b.x + span, b.y)
     b.x += span
@@ -339,6 +378,7 @@ def c_wall(b, ctx):
                      'w': 0.8, 'h': r(rise + 1.0), 'kind': 'wall'})
     b.x += 0.8
     b.y += rise
+    b.extra_t += rise / 3.2                      # wall-jumping up takes time
     b.protect(b.slab(b.x, b.x + 5, b.y))         # top of the climb
     b.mark(b.x + 2.2, 2)
     b.x += 5
@@ -388,6 +428,8 @@ def c_float(b, ctx):
     height = b.rng.uniform(4.0, 5.5)
     roof = entry + height + 2.6
     span_start = b.x
+    # Antigravity is 0.981 up, so the drift to the ceiling is slow.
+    b.extra_t += math.sqrt(2.0 * (height + 2.6) / 0.981)
     b.solids.append({'x': r(b.x + 0.5), 'y': r(entry + height / 2),
                      'w': 1.0, 'h': r(height), 'kind': 'ground', 'roof': True})
     b.x += 1.0 + b.rng.uniform(3.0, 4.5)
